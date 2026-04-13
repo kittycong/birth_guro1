@@ -1,2 +1,932 @@
-..."id":20,"name":"최수연","empId":"2025-0001","dept":"사무행정실","m":12,"d":27}, 
-...
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>구로자립생활센터 직원 생일 관리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ed;
+    --surface: #ffffff;
+    --surface2: #faf8f5;
+    --border: #e8e2d9;
+    --text: #1a1714;
+    --text2: #6b6560;
+    --accent: #c84b2f;
+    --accent2: #e8875a;
+    --accent-light: #fdf0eb;
+    --dept-1: #3d6b8c;
+    --dept-2: #5a8a5c;
+    --dept-3: #8c6b3d;
+    --dept-4: #7a5c8c;
+    --dept-5: #8c5c7a;
+    --shadow: 0 2px 12px rgba(26,23,20,0.08);
+    --shadow-lg: 0 8px 32px rgba(26,23,20,0.12);
+    --radius: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1714;
+      --surface: #2a2520;
+      --surface2: #322d28;
+      --border: #3d3935;
+      --text: #f5f2ed;
+      --text2: #b8b0a5;
+      --accent: #e8875a;
+      --accent2: #f0a070;
+      --accent-light: #4a2f1f;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--text);
+    color: #fff;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  }
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    letter-spacing: -0.3px;
+    color: #fff;
+  }
+  header .subtitle {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    display: none;
+  }
+  @media (min-width: 768px) {
+    header { padding: 0 2rem; height: 64px; }
+    header h1 { font-size: 1.3rem; }
+    header .subtitle { display: inline; }
+  }
+  .header-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #b03d24; }
+  .btn-ghost {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.2); }
+  .btn-sm {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+    border-radius: 6px;
+  }
+  .btn-edit {
+    background: var(--surface2);
+    color: var(--dept-1);
+    border: 1px solid var(--border);
+  }
+  .btn-edit:hover { background: #dbe8f0; }
+  .btn-delete {
+    background: var(--surface2);
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+  .btn-delete:hover { background: var(--accent-light); }
+  .btn-cancel {
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .btn-cancel:hover { background: var(--border); }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  @media (min-width: 768px) {
+    main { padding: 2rem 1.5rem; }
+  }
+
+  /* ── Today banner ── */
+  .today-banner {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    box-shadow: var(--shadow-lg);
+  }
+  .today-banner .icon { font-size: 1.8rem; flex-shrink: 0; }
+  .today-banner .info { flex: 1; }
+  .today-banner .info h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+  .today-banner .info p { font-size: 0.75rem; opacity: 0.85; }
+  .today-banner.hidden { display: none; }
+  @media (min-width: 768px) {
+    .today-banner { padding: 1.25rem 1.75rem; gap: 1rem; }
+    .today-banner .icon { font-size: 2rem; }
+    .today-banner .info h2 { font-size: 1.05rem; }
+    .today-banner .info p { font-size: 0.82rem; }
+  }
+
+  /* ── Stats bar ── */
+  #statsBar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    #statsBar { grid-template-columns: repeat(4, 1fr); }
+  }
+  .stat-chip {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-num {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  @media (min-width: 768px) {
+    .stat-chip { padding: 1rem; }
+    .stat-num { font-size: 1.8rem; }
+  }
+  .stat-label {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--text2);
+    line-height: 1.3;
+    font-weight: 500;
+  }
+
+  /* ── Controls bar ── */
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+  .search-wrap {
+    flex: 1;
+    min-width: 160px;
+    position: relative;
+    order: 1;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 10px 12px 10px 32px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.85rem;
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color 0.15s;
+    outline: none;
+    height: 40px;
+  }
+  .search-wrap input:focus { border-color: var(--accent2); }
+  .search-wrap .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text2);
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+  select.filter {
+    padding: 8px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.8rem;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+    height: 40px;
+  }
+  select.filter:focus { border-color: var(--accent2); }
+
+  /* ── Month groups ── */
+  .month-group { margin-bottom: 1.5rem; }
+  @media (min-width: 768px) {
+    .month-group { margin-bottom: 2rem; }
+  }
+  .month-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.75rem;
+  }
+  .month-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--text);
+    line-height: 1;
+  }
+  @media (min-width: 768px) {
+    .month-label { font-size: 1.5rem; }
+  }
+  .month-count {
+    font-size: 0.7rem;
+    color: var(--text2);
+    background: var(--border);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-weight: 500;
+  }
+  .month-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Card grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  @media (min-width: 640px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .cards-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  }
+
+  /* ── Birthday card ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 0.9rem;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s, opacity 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    box-shadow: var(--shadow);
+    border-color: #d5cec5;
+    transform: translateY(-1px);
+  }
+  .card.today-card {
+    border-color: var(--accent2);
+    background: var(--accent-light);
+  }
+  .card.soon-card {
+    border-color: #f0d4c4;
+  }
+  .card.past-card {
+    opacity: 0.6;
+  }
+  .card-date-badge {
+    min-width: 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    font-size: 0.75rem;
+  }
+  @media (min-width: 768px) {
+    .card-date-badge { min-width: 52px; width: 52px; height: 52px; font-size: 0.8rem; }
+  }
+  .card.today-card .card-date-badge {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .card-date-badge .day {
+    font-weight: 700;
+    font-size: 1.1em;
+  }
+  .card-date-badge .month-sm {
+    font-size: 0.65em;
+    opacity: 0.8;
+  }
+  .card-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .card-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 3px;
+    word-break: keep-all;
+  }
+  @media (min-width: 768px) {
+    .card-name { font-size: 0.95rem; }
+  }
+  .card-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 0.7rem;
+  }
+  .dept-tag {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.65rem;
+    white-space: nowrap;
+  }
+  .dept-tag.dept-1 { background: rgba(61, 107, 140, 0.15); color: var(--dept-1); }
+  .dept-tag.dept-2 { background: rgba(90, 138, 92, 0.15); color: var(--dept-2); }
+  .dept-tag.dept-3 { background: rgba(140, 107, 61, 0.15); color: var(--dept-3); }
+  .dept-tag.dept-4 { background: rgba(122, 92, 140, 0.15); color: var(--dept-4); }
+  .dept-tag.dept-5 { background: rgba(140, 92, 122, 0.15); color: var(--dept-5); }
+  .card-empid {
+    color: var(--text2);
+  }
+  .card-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .today-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--accent);
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 600;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text2);
+  }
+  .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .empty-state p {
+    font-size: 0.9rem;
+  }
+
+  /* ── Modal ── */
+  #modalOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 23, 20, 0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  #modalOverlay.open {
+    display: flex;
+  }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    max-width: 500px;
+    width: 100%;
+    padding: 1.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-header {
+    margin-bottom: 1.2rem;
+  }
+  .modal-header h2 {
+    font-size: 1.2rem;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--surface);
+  }
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--accent2);
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    z-index: 300;
+    transition: bottom 0.3s;
+  }
+  #toast.show {
+    bottom: 20px;
+  }
+
+  /* ── Responsive tweaks ── */
+  @media (max-width: 640px) {
+    .btn-sm { padding: 4px 8px; font-size: 0.65rem; }
+    .card { padding: 0.8rem; gap: 0.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>생일 관리</h1>
+    <span class="subtitle">구로자립생활센터</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportJSON()">📥 내보내기</button>
+    <button class="btn btn-primary btn-sm" onclick="openAddModal()">➕ 추가</button>
+  </div>
+</header>
+
+<main>
+  <div id="todayBanner" class="today-banner hidden">
+    <div class="icon">🎂</div>
+    <div class="info">
+      <h2 id="todayBannerTitle">오늘의 생일</h2>
+      <p id="todayBannerSub"></p>
+    </div>
+  </div>
+
+  <div id="statsBar"></div>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="이름, 부서, 직원ID" oninput="render()">
+    </div>
+    <select id="deptFilter" class="filter" onchange="render()">
+      <option value="">부서</option>
+    </select>
+    <select id="monthFilter" class="filter" onchange="render()">
+      <option value="">월</option>
+    </select>
+  </div>
+
+  <div id="listContainer"></div>
+</main>
+
+<div id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">직원 추가</h2>
+    </div>
+    <form onsubmit="event.preventDefault(); saveEmployee();">
+      <div class="form-group">
+        <label>이름 *</label>
+        <input type="text" id="f_name" placeholder="홍길동" required>
+      </div>
+      <div class="form-group">
+        <label>직원ID</label>
+        <input type="text" id="f_empId" placeholder="예: 2025-0001">
+      </div>
+      <div class="form-group">
+        <label>부서 *</label>
+        <select id="f_dept" required>
+          <option value="활동지원팀">활동지원팀</option>
+          <option value="복지사업팀">복지사업팀</option>
+          <option value="사무행정실">사무행정실</option>
+          <option value="사무국">사무국</option>
+          <option value="주택">주택</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>생년월일 *</label>
+        <div style="display: flex; gap: 8px;">
+          <select id="f_m" required style="flex: 1;">
+            <option value="">월</option>
+            <option value="1">1월</option>
+            <option value="2">2월</option>
+            <option value="3">3월</option>
+            <option value="4">4월</option>
+            <option value="5">5월</option>
+            <option value="6">6월</option>
+            <option value="7">7월</option>
+            <option value="8">8월</option>
+            <option value="9">9월</option>
+            <option value="10">10월</option>
+            <option value="11">11월</option>
+            <option value="12">12월</option>
+          </select>
+          <input type="number" id="f_d" placeholder="일" min="1" max="31" required style="flex: 1;">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-cancel" onclick="closeModal()">취소</button>
+        <button type="submit" class="btn btn-primary">저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.0/confetti.min.js"></script>
+<script>
+// ── Data ──────────────────────────────────────────
+const INITIAL_DATA = [
+  {"id":1,"name":"이혜민","empId":"2017-0023","dept":"활동지원팀","m":1,"d":16},
+  {"id":2,"name":"이은희","empId":"2017-0002","dept":"사무국","m":1,"d":22},
+  {"id":3,"name":"신건철","empId":"2026-0009","dept":"사무국","m":1,"d":28},
+  {"id":4,"name":"정채윤","empId":"2025-0095","dept":"활동지원팀","m":2,"d":1},
+  {"id":5,"name":"김은서","empId":"2025-0078","dept":"복지사업팀","m":2,"d":15},
+  {"id":6,"name":"노현숙","empId":"2024-0139","dept":"사무행정실","m":2,"d":17},
+  {"id":7,"name":"김주진","empId":"2022-0204","dept":"활동지원팀","m":2,"d":24},
+  {"id":8,"name":"박수빈","empId":"2026-0008","dept":"복지사업팀","m":4,"d":19},
+  {"id":9,"name":"송지은","empId":"2025-0121","dept":"복지사업팀","m":7,"d":2},
+  {"id":10,"name":"주덕원","empId":"2025-0138","dept":"복지사업팀","m":9,"d":18},
+  {"id":11,"name":"권은지","empId":"2025-0137","dept":"활동지원팀","m":9,"d":22},
+  {"id":12,"name":"김유리","empId":"2026-0012","dept":"활동지원팀","m":10,"d":20},
+  {"id":13,"name":"이세은","empId":"2024-0001","dept":"복지사업팀","m":11,"d":7},
+  {"id":14,"name":"박진미","empId":"2017-0118","dept":"활동지원팀","m":11,"d":9},
+  {"id":15,"name":"김휘원","empId":"2025-0043","dept":"사무행정실","m":11,"d":9},
+  {"id":16,"name":"인상필","empId":"2025-0126","dept":"복지사업팀","m":11,"d":10},
+  {"id":17,"name":"최유나","empId":"2024-0086","dept":"복지사업팀","m":11,"d":14},
+  {"id":18,"name":"조승민","empId":"2025-0002","dept":"사무행정실","m":12,"d":15},
+  {"id":19,"name":"박지영","empId":"2023-0045","dept":"활동지원팀","m":12,"d":22},
+  {"id":20,"name":"최수연","empId":"2025-0001","dept":"사무행정실","m":12,"d":27}
+];
+
+const DEPT_MAP = {
+  "활동지원팀": 1,
+  "복지사업팀": 2,
+  "사무행정실": 3,
+  "주택": 5,
+  "사무국": 4
+};
+
+let data = loadData();
+let editingId = null;
+const today = new Date();
+const todayM = today.getMonth() + 1;
+const todayD = today.getDate();
+const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+
+// ── LocalStorage ──────────────────────────────────
+function loadData() {
+  const stored = localStorage.getItem('guro_birthdays');
+  return stored ? JSON.parse(stored) : INITIAL_DATA;
+}
+
+function saveData() {
+  localStorage.setItem('guro_birthdays', JSON.stringify(data));
+}
+
+// ── Utilities ──────────────────────────────────────
+function nextId() {
+  return data.length === 0 ? 1 : Math.max(...data.map(d => d.id)) + 1;
+}
+
+function isToday(m, d) { return m === todayM && d === todayD; }
+
+function isSoon(m, d, days = 7) {
+  const bday = new Date(today.getFullYear(), m - 1, d);
+  const diff = (bday - today) / (1000 * 60 * 60 * 24);
+  return diff > 0 && diff <= days;
+}
+
+function isPast(m, d) {
+  const bday = new Date(today.getFullYear(), m - 1, d);
+  return bday < today;
+}
+
+// ── Stats bar ─────────────────────────────────────
+function renderStats() {
+  const todayBirthdays = data.filter(e => isToday(e.m, e.d));
+  const soonBirthdays  = data.filter(e => isSoon(e.m, e.d));
+  const depts = [...new Set(data.map(e => e.dept))];
+
+  const banner = document.getElementById('todayBanner');
+  if (todayBirthdays.length > 0) {
+    banner.classList.remove('hidden');
+    document.getElementById('todayBannerTitle').textContent =
+      `🎂 오늘의 생일: ${todayBirthdays.map(e => e.name).join(', ')}`;
+    document.getElementById('todayBannerSub').textContent =
+      `${todayM}월 ${todayD}일 · ${todayBirthdays.map(e => e.dept).join(', ')}`;
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.3 }
+    });
+  } else {
+    banner.classList.add('hidden');
+  }
+
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-chip">
+      <span class="stat-num">${data.length}</span>
+      <span class="stat-label">전체<br>직원</span>
+    </div>
+    <div class="stat-chip">
+      <span class="stat-num">${todayBirthdays.length}</span>
+      <span class="stat-label">오늘<br>생일</span>
+    </div>
+    <div class="stat-chip">
+      <span class="stat-num">${soonBirthdays.length}</span>
+      <span class="stat-label">7일 내<br>생일</span>
+    </div>
+    <div class="stat-chip">
+      <span class="stat-num">${depts.length}</span>
+      <span class="stat-label">부서<br>수</span>
+    </div>
+  `;
+}
+
+// ── Filters ───────────────────────────────────────
+function initFilters() {
+  const depts = [...new Set(data.map(e => e.dept))].sort();
+  const deptSel = document.getElementById('deptFilter');
+  deptSel.innerHTML = '<option value="">전체 부서</option>' +
+    depts.map(d => `<option value="${d}">${d}</option>`).join('');
+
+  const monthSel = document.getElementById('monthFilter');
+  monthSel.innerHTML = '<option value="">전체 월</option>' +
+    MONTH_KO.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+}
+
+// ── Render ────────────────────────────────────────
+function render() {
+  const q    = document.getElementById('searchInput').value.trim().toLowerCase();
+  const dept = document.getElementById('deptFilter').value;
+  const mon  = parseInt(document.getElementById('monthFilter').value) || 0;
+
+  let filtered = data.filter(e => {
+    const matchQ    = !q || e.name.includes(q) || e.dept.includes(q) || e.empId.includes(q);
+    const matchDept = !dept || e.dept === dept;
+    const matchMon  = !mon || e.m === mon;
+    return matchQ && matchDept && matchMon;
+  });
+
+  filtered.sort((a, b) => a.m !== b.m ? a.m - b.m : a.d - b.d);
+
+  const container = document.getElementById('listContainer');
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <p>검색 결과가 없습니다.</p>
+      </div>`;
+    return;
+  }
+
+  const byMonth = {};
+  filtered.forEach(e => {
+    if (!byMonth[e.m]) byMonth[e.m] = [];
+    byMonth[e.m].push(e);
+  });
+
+  container.innerHTML = Object.entries(byMonth).map(([m, employees]) => `
+    <div class="month-group">
+      <div class="month-header">
+        <span class="month-label">${MONTH_KO[m-1]}</span>
+        <span class="month-count">${employees.length}명</span>
+        <div class="month-line"></div>
+      </div>
+      <div class="cards-grid">
+        ${employees.map(e => renderCard(e)).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCard(e) {
+  const today_  = isToday(e.m, e.d);
+  const soon_   = isSoon(e.m, e.d);
+  const past_   = isPast(e.m, e.d);
+  const deptNum = DEPT_MAP[e.dept] || 1;
+  
+  const classes = ['card', 
+    today_ ? 'today-card' : '', 
+    soon_ && !today_ ? 'soon-card' : '',
+    past_ && !today_ ? 'past-card' : ''
+  ].filter(Boolean).join(' ');
+  
+  return `
+    <div class="${classes}">
+      <div class="card-date-badge">
+        <span class="day">${e.d}</span>
+        <span class="month-sm">${MONTH_KO[e.m-1]}</span>
+      </div>
+      <div class="card-info">
+        <div class="card-name">${e.name}</div>
+        <div class="card-meta">
+          <span class="dept-tag dept-${deptNum}">${e.dept}</span>
+          <span class="card-empid">${e.empId}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-sm btn-edit" onclick="openEditModal(${e.id})">수정</button>
+        <button class="btn btn-sm btn-delete" onclick="deleteEmployee(${e.id})">삭제</button>
+      </div>
+      ${today_ ? '<span class="today-badge">🎂 오늘!</span>' : ''}
+    </div>
+  `;
+}
+
+// ── Modal ─────────────────────────────────────────
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = '직원 추가';
+  document.getElementById('f_name').value = '';
+  document.getElementById('f_empId').value = '';
+  document.getElementById('f_dept').value = '활동지원팀';
+  document.getElementById('f_m').value = '';
+  document.getElementById('f_d').value = '';
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('f_name').focus(), 50);
+}
+
+function openEditModal(id) {
+  const e = data.find(x => x.id === id);
+  if (!e) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = '직원 정보 수정';
+  document.getElementById('f_name').value  = e.name;
+  document.getElementById('f_empId').value = e.empId;
+  document.getElementById('f_dept').value  = e.dept;
+  document.getElementById('f_m').value     = e.m;
+  document.getElementById('f_d').value     = e.d;
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('f_name').focus(), 50);
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function saveEmployee() {
+  const name  = document.getElementById('f_name').value.trim();
+  const empId = document.getElementById('f_empId').value.trim();
+  const dept  = document.getElementById('f_dept').value;
+  const m     = parseInt(document.getElementById('f_m').value);
+  const d     = parseInt(document.getElementById('f_d').value);
+
+  if (!name) { showToast('⚠️ 이름을 입력해주세요'); return; }
+  if (!m) { showToast('⚠️ 월을 선택해주세요'); return; }
+  if (!d || d < 1 || d > 31) { showToast('⚠️ 날짜를 올바르게 입력해주세요'); return; }
+
+  if (editingId !== null) {
+    const idx = data.findIndex(x => x.id === editingId);
+    data[idx] = { id: editingId, name, empId, dept, m, d };
+    showToast('✅ 수정되었습니다');
+  } else {
+    data.push({ id: nextId(), name, empId, dept, m, d });
+    showToast('✅ 추가되었습니다');
+  }
+
+  saveData();
+  closeModal();
+  initFilters();
+  renderStats();
+  render();
+}
+
+function deleteEmployee(id) {
+  const e = data.find(x => x.id === id);
+  if (!e) return;
+  if (!confirm(`"${e.name}" 직원을 삭제하시겠습니까?`)) return;
+  data = data.filter(x => x.id !== id);
+  saveData();
+  initFilters();
+  renderStats();
+  render();
+  showToast('🗑 삭제되었습니다');
+}
+
+// ── Export ────────────────────────────────────────
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'guro_birthdays.json';
+  a.click();
+  showToast('⬇ 데이터 다운로드 완료');
+}
+
+// ── Toast ─────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Keyboard shortcut ─────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── Init ──────────────────────────────────────────
+initFilters();
+renderStats();
+render();
+</script>
+</body>
+</html>
